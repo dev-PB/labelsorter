@@ -1,6 +1,9 @@
 use std::{fs::File, path::PathBuf, process};
 
-use clap::{Parser, Subcommand};
+use args::{Args, Commands};
+use clap::Parser;
+
+mod args;
 
 fn main() {
     println!("Hello, world!");
@@ -10,18 +13,6 @@ fn main() {
     match args.command {
         Commands::Sort { path } => sort(path),
     }
-}
-
-#[derive(Parser)]
-#[command(version, about, long_about = None)]
-pub struct Args {
-    #[command(subcommand)]
-    pub command: Commands,
-}
-
-#[derive(Subcommand)]
-pub enum Commands {
-    Sort { path: PathBuf },
 }
 
 fn sort(path: PathBuf) {
