@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{fs::File, path::PathBuf, process};
 
 use clap::{Parser, Subcommand};
 
@@ -8,7 +8,7 @@ fn main() {
     let args = Args::parse();
 
     match args.command {
-        Commands::Sort { path } => todo!(),
+        Commands::Sort { path } => sort(path),
     }
 }
 
@@ -22,4 +22,16 @@ pub struct Args {
 #[derive(Subcommand)]
 pub enum Commands {
     Sort { path: PathBuf },
+}
+
+fn sort(path: PathBuf) {
+    let file = match File::open(path) {
+        Ok(file) => file,
+        Err(err) => {
+            eprintln!("Error while opening file!\n{}", err);
+            process::exit(1);
+        }
+    };
+
+    eprintln!("{:?}", file);
 }
