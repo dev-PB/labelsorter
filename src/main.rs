@@ -16,7 +16,15 @@ fn main() {
 }
 
 fn sort(path: PathBuf) {
-    let file = match File::open(path) {
+    let extension = match path.extension() {
+        Some(ext) => ext,
+        None => {
+            println!("File has no extension.");
+            process::exit(1)
+        }
+    };
+
+    let file = match File::open(&path) {
         Ok(file) => file,
         Err(err) => {
             eprintln!("Error while opening file!\n{}", err);
@@ -24,5 +32,15 @@ fn sort(path: PathBuf) {
         }
     };
 
-    eprintln!("{:?}", file);
+    match extension.to_str() {
+        Some("json") => get_json(&file),
+        _ => {
+            eprintln!("The filetype of the specified file is unsupported.");
+            process::exit(1);
+        }
+    }
+}
+
+fn get_json(file: &File) {
+    todo!()
 }
