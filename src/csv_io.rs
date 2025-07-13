@@ -46,5 +46,7 @@ pub fn export_csv(file_name: String, entries: Vec<Entry>) {
     writer.flush().unwrap_or_else(|err| {
         eprintln!("Error while flushing CSV writer:\n{}", err);
         process::exit(1);
-    })
+    });
+
+    println!("Sorted to {}.csv", file_name);
 }

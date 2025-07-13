@@ -10,8 +10,6 @@ mod entry;
 use entry::Entry;
 
 fn main() {
-    println!("Hello, world!");
-
     let args = Args::parse();
 
     match args.command {
