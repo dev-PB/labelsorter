@@ -1,3 +1,4 @@
+use core::panic;
 use std::{fs::File, path::PathBuf, process};
 
 use args::{Args, Commands};
@@ -18,14 +19,6 @@ fn main() {
 }
 
 fn sort(path: PathBuf) {
-    let extension = match path.extension() {
-        Some(ext) => ext,
-        None => {
-            println!("File has no extension.");
-            process::exit(1)
-        }
-    };
-
     let file = match File::open(&path) {
         Ok(file) => file,
         Err(err) => {
@@ -34,8 +27,21 @@ fn sort(path: PathBuf) {
         }
     };
 
-    let mut entries: Vec<Entry> = match extension.to_str() {
-        Some("csv") => csv_io::get_csv(&file),
+    let extension = match path.extension() {
+        Some(ext) => ext,
+        None => {
+            println!("File has no extension.");
+            process::exit(1)
+        }
+    };
+
+    let extension_str = extension.to_str().unwrap_or_else(|| {
+        eprintln!("Error getting file extension as str");
+        process::exit(1);
+    });
+
+    let mut entries: Vec<Entry> = match extension_str {
+        "csv" => csv_io::get_csv(&file),
         _ => {
             eprintln!("The filetype of the specified file is unsupported.");
             process::exit(1);
@@ -48,5 +54,13 @@ fn sort(path: PathBuf) {
             .expect("Error while sorting file.")
     });
 
-    csv_io::export_csv(String::from("output"), entries);
+    match extension_str {
+        "csv" => csv_io::export_csv(String::from("output"), entries),
+        _ => {
+            panic!(
+                "Unsupported file extension when exporting: {}",
+                extension_str
+            );
+        }
+    }
 }
